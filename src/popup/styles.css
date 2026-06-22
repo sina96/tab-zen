@@ -11,8 +11,8 @@
 }
 
 body {
-  width: 320px;
-  min-height: 220px;
+  width: 360px;
+  min-height: 360px;
   margin: 0;
   background: #f7f8fb;
 }
@@ -47,4 +47,116 @@ h1 {
   color: #4b5563;
   font-size: 14px;
   line-height: 1.5;
+}
+
+.dashboard {
+  display: grid;
+  gap: 18px;
+  min-height: 360px;
+  padding: 20px;
+}
+
+.header {
+  display: grid;
+  gap: 6px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.metric {
+  display: grid;
+  min-height: 82px;
+  align-content: space-between;
+  padding: 14px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.metric span,
+.section-heading span {
+  color: #667085;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.metric strong {
+  color: #111827;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.domains {
+  display: grid;
+  gap: 10px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 15px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.domain-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.domain-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.domain-list span {
+  overflow: hidden;
+  color: #1f2937;
+  font-size: 13px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.domain-list strong {
+  min-width: 28px;
+  color: #2563eb;
+  font-size: 14px;
+  line-height: 1;
+  text-align: right;
+}
+
+.empty-state {
+  margin: 0;
+  padding: 18px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  color: #667085;
+  background: #ffffff;
+  font-size: 14px;
+  line-height: 1.4;
 }
