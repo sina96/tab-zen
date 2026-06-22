@@ -15,9 +15,20 @@ type DashboardStats = {
   tabCount: number;
   windowCount: number;
   topDomains: DomainStat[];
+  memory: MemoryStats;
+};
+
+type MemoryState = "healthy" | "warm" | "spicy" | "critical";
+
+type MemoryStats = {
+  state: MemoryState;
+  usedPercent: number;
+  availableGb: number;
+  totalGb: number;
 };
 
 const MAX_TOP_DOMAINS = 5;
+const BYTES_PER_GB = 1024 ** 3;
 
 const escapeHtml = (value: string): string =>
   value.replace(/[&<>"']/g, (character) => {
@@ -64,16 +75,49 @@ const countDomains = (tabs: chrome.tabs.Tab[]): DomainStat[] => {
     .slice(0, MAX_TOP_DOMAINS);
 };
 
+const calculateMemoryState = (usedPercent: number): MemoryState => {
+  if (usedPercent >= 90) {
+    return "critical";
+  }
+
+  if (usedPercent >= 75) {
+    return "spicy";
+  }
+
+  if (usedPercent >= 60) {
+    return "warm";
+  }
+
+  return "healthy";
+};
+
+const formatGb = (bytes: number): number => Number((bytes / BYTES_PER_GB).toFixed(1));
+
+const loadMemoryStats = async (): Promise<MemoryStats> => {
+  const memory = await chrome.system.memory.getInfo();
+  const usedBytes = memory.capacity - memory.availableCapacity;
+  const usedPercent = Math.round((usedBytes / memory.capacity) * 100);
+
+  return {
+    state: calculateMemoryState(usedPercent),
+    usedPercent,
+    availableGb: formatGb(memory.availableCapacity),
+    totalGb: formatGb(memory.capacity)
+  };
+};
+
 const loadStats = async (): Promise<DashboardStats> => {
-  const [tabs, windows] = await Promise.all([
+  const [tabs, windows, memory] = await Promise.all([
     chrome.tabs.query({}),
-    chrome.windows.getAll()
+    chrome.windows.getAll(),
+    loadMemoryStats()
   ]);
 
   return {
     tabCount: tabs.length,
     windowCount: windows.length,
-    topDomains: countDomains(tabs)
+    topDomains: countDomains(tabs),
+    memory
   };
 };
 
@@ -137,6 +181,15 @@ const renderDashboard = (stats: DashboardStats): void => {
           <span>Windows</span>
           <strong>${stats.windowCount}</strong>
         </article>
+      </section>
+
+      <section class="memory memory-${stats.memory.state}" aria-labelledby="memory-title">
+        <div>
+          <h2 id="memory-title">Memory pressure</h2>
+          <p>${stats.memory.usedPercent}% used</p>
+        </div>
+        <strong>${stats.memory.state}</strong>
+        <span>${stats.memory.availableGb} GB free of ${stats.memory.totalGb} GB</span>
       </section>
 
       <section class="domains" aria-labelledby="domains-title">
