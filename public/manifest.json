@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Tab-Zen",
+  "description": "A local-first Chrome extension for calmer tab management.",
+  "version": "0.1.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Tab-Zen"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["tabs"]
+}
