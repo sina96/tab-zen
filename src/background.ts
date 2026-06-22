@@ -1,18 +1,12 @@
-const BADGE_BACKGROUND = "#2563eb";
-const INTERVENTION_COOLDOWN_MS = 24 * 60 * 60 * 1000;
-const LAST_INTERVENTION_KEY = "lastInterventionAt";
+import { loadSettings, type InterventionLevel, type TabZenSettings } from "./settings";
 
-type InterventionLevel = "reminder" | "warning" | "intervention";
+const BADGE_BACKGROUND = "#2563eb";
+const LAST_INTERVENTION_KEY = "lastInterventionAt";
+const HOUR_MS = 60 * 60 * 1000;
 
 type LastIntervention = {
   level: InterventionLevel;
   timestamp: number;
-};
-
-const INTERVENTION_THRESHOLDS: Record<InterventionLevel, number> = {
-  reminder: 20,
-  warning: 50,
-  intervention: 100
 };
 
 const INTERVENTION_RANK: Record<InterventionLevel, number> = {
@@ -33,16 +27,16 @@ const updateTabCountBadge = async (): Promise<void> => {
   await chrome.action.setBadgeBackgroundColor({ color: BADGE_BACKGROUND });
 };
 
-const getInterventionLevel = (tabCount: number): InterventionLevel | null => {
-  if (tabCount >= INTERVENTION_THRESHOLDS.intervention) {
+const getInterventionLevel = (tabCount: number, settings: TabZenSettings): InterventionLevel | null => {
+  if (tabCount >= settings.interventionThreshold) {
     return "intervention";
   }
 
-  if (tabCount >= INTERVENTION_THRESHOLDS.warning) {
+  if (tabCount >= settings.warningThreshold) {
     return "warning";
   }
 
-  if (tabCount >= INTERVENTION_THRESHOLDS.reminder) {
+  if (tabCount >= settings.reminderThreshold) {
     return "reminder";
   }
 
@@ -60,7 +54,7 @@ const getLastIntervention = async (): Promise<LastIntervention | null> => {
     "timestamp" in value &&
     typeof value.timestamp === "number" &&
     typeof value.level === "string" &&
-    value.level in INTERVENTION_THRESHOLDS
+    ["reminder", "warning", "intervention"].includes(value.level)
   ) {
     return value as LastIntervention;
   }
@@ -80,8 +74,8 @@ const hasOpenIntervention = async (): Promise<boolean> => {
 };
 
 const maybeOpenIntervention = async (): Promise<void> => {
-  const tabs = await chrome.tabs.query({});
-  const level = getInterventionLevel(tabs.length);
+  const [tabs, settings] = await Promise.all([chrome.tabs.query({}), loadSettings()]);
+  const level = settings.interventionEnabled ? getInterventionLevel(tabs.length, settings) : null;
 
   if (!level || (await hasOpenIntervention())) {
     return;
@@ -92,7 +86,7 @@ const maybeOpenIntervention = async (): Promise<void> => {
   const isEscalation =
     lastIntervention && INTERVENTION_RANK[level] > INTERVENTION_RANK[lastIntervention.level];
 
-  if (lastIntervention && !isEscalation && now - lastIntervention.timestamp < INTERVENTION_COOLDOWN_MS) {
+  if (lastIntervention && !isEscalation && now - lastIntervention.timestamp < settings.cooldownHours * HOUR_MS) {
     return;
   }
 
