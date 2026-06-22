@@ -93,6 +93,53 @@ h1 {
   letter-spacing: 0;
 }
 
+.memory {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid #dbe3ef;
+  border-left: 4px solid #16a34a;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.memory h2,
+.memory p {
+  margin: 0;
+}
+
+.memory p,
+.memory span {
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.memory strong {
+  color: #111827;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.memory span {
+  grid-column: 1 / -1;
+}
+
+.memory-warm {
+  border-left-color: #ca8a04;
+}
+
+.memory-spicy {
+  border-left-color: #ea580c;
+}
+
+.memory-critical {
+  border-left-color: #dc2626;
+}
+
 .domains {
   display: grid;
   gap: 10px;
