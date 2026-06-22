@@ -21,6 +21,8 @@ const INTERVENTION_RANK: Record<InterventionLevel, number> = {
   intervention: 3
 };
 
+let interventionCheck: Promise<void> | null = null;
+
 const updateTabCountBadge = async (): Promise<void> => {
   const tabs = await chrome.tabs.query({});
   const tabCount = tabs.length;
@@ -71,10 +73,10 @@ const setLastIntervention = async (lastIntervention: LastIntervention): Promise<
 };
 
 const hasOpenIntervention = async (): Promise<boolean> => {
-  const interventionUrl = `${chrome.runtime.getURL("intervention.html")}*`;
-  const tabs = await chrome.tabs.query({ url: interventionUrl });
+  const interventionUrl = chrome.runtime.getURL("intervention.html");
+  const tabs = await chrome.tabs.query({});
 
-  return tabs.length > 0;
+  return tabs.some((tab) => tab.url?.startsWith(interventionUrl));
 };
 
 const maybeOpenIntervention = async (): Promise<void> => {
@@ -101,9 +103,19 @@ const maybeOpenIntervention = async (): Promise<void> => {
   });
 };
 
+const scheduleInterventionCheck = (): void => {
+  if (interventionCheck) {
+    return;
+  }
+
+  interventionCheck = maybeOpenIntervention().finally(() => {
+    interventionCheck = null;
+  });
+};
+
 const refreshExtensionState = (): void => {
   void updateTabCountBadge();
-  void maybeOpenIntervention();
+  scheduleInterventionCheck();
 };
 
 chrome.runtime.onInstalled.addListener(() => {
