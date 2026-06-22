@@ -260,22 +260,43 @@ const renderDuplicateGroups = (groups: DuplicateGroup[]): string => {
 };
 
 const cleanupDuplicateTabs = async (groups: DuplicateGroup[]): Promise<void> => {
-  const tabIds = groups
-    .flatMap((group) => group.removableTabs)
-    .map((tab) => tab.id)
-    .filter((tabId): tabId is number => typeof tabId === "number");
+  const removableUrls = new Set(
+    groups
+      .flatMap((group) => group.removableTabs)
+      .map((tab) => normalizeTabUrl(tab.url))
+      .filter((url): url is string => typeof url === "string")
+  );
 
-  if (tabIds.length === 0) {
+  if (removableUrls.size === 0) {
     return;
   }
 
-  const confirmed = window.confirm(`Close ${tabIds.length} duplicate unpinned tab${tabIds.length === 1 ? "" : "s"}?`);
+  const currentTabs = await chrome.tabs.query({});
+  const currentDuplicateGroups = findDuplicateGroups(currentTabs);
+  const currentTabIds = currentDuplicateGroups
+    .flatMap((group) => group.removableTabs)
+    .filter((tab) => {
+      const normalizedUrl = normalizeTabUrl(tab.url);
+
+      return normalizedUrl ? removableUrls.has(normalizedUrl) : false;
+    })
+    .map((tab) => tab.id)
+    .filter((tabId): tabId is number => typeof tabId === "number");
+
+  if (currentTabIds.length === 0) {
+    await initializeDashboard();
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `Close ${currentTabIds.length} duplicate unpinned tab${currentTabIds.length === 1 ? "" : "s"}?`
+  );
 
   if (!confirmed) {
     return;
   }
 
-  await chrome.tabs.remove(tabIds);
+  await chrome.tabs.remove(currentTabIds);
   await initializeDashboard();
 };
 
