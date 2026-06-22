@@ -17,7 +17,8 @@ export default [
       },
       globals: {
         chrome: "readonly",
-        document: "readonly"
+        document: "readonly",
+        window: "readonly"
       }
     },
     plugins: {

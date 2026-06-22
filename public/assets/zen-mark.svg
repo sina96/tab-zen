@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Tab-Zen mark">
+  <rect width="120" height="120" rx="24" fill="#dbeafe"/>
+  <path d="M32 76c16 12 40 12 56 0" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+  <path d="M38 48h44" fill="none" stroke="#111827" stroke-width="8" stroke-linecap="round"/>
+  <path d="M46 60h28" fill="none" stroke="#111827" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="36" cy="36" r="8" fill="#16a34a"/>
+</svg>
