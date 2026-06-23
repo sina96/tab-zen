@@ -27,7 +27,7 @@ const updateTabCountBadge = async (): Promise<void> => {
   await chrome.action.setBadgeBackgroundColor({ color: BADGE_BACKGROUND });
 };
 
-const getInterventionLevel = (tabCount: number, settings: TabZenSettings): InterventionLevel | null => {
+export const getInterventionLevel = (tabCount: number, settings: TabZenSettings): InterventionLevel | null => {
   if (tabCount >= settings.interventionThreshold) {
     return "intervention";
   }
@@ -41,6 +41,21 @@ const getInterventionLevel = (tabCount: number, settings: TabZenSettings): Inter
   }
 
   return null;
+};
+
+export const shouldRespectCooldown = (
+  level: InterventionLevel,
+  lastIntervention: LastIntervention | null,
+  now: number,
+  cooldownHours: number
+): boolean => {
+  if (!lastIntervention) {
+    return false;
+  }
+
+  const isEscalation = INTERVENTION_RANK[level] > INTERVENTION_RANK[lastIntervention.level];
+
+  return !isEscalation && now - lastIntervention.timestamp < cooldownHours * HOUR_MS;
 };
 
 const getLastIntervention = async (): Promise<LastIntervention | null> => {
@@ -83,10 +98,7 @@ const maybeOpenIntervention = async (): Promise<void> => {
 
   const now = Date.now();
   const lastIntervention = await getLastIntervention();
-  const isEscalation =
-    lastIntervention && INTERVENTION_RANK[level] > INTERVENTION_RANK[lastIntervention.level];
-
-  if (lastIntervention && !isEscalation && now - lastIntervention.timestamp < settings.cooldownHours * HOUR_MS) {
+  if (shouldRespectCooldown(level, lastIntervention, now, settings.cooldownHours)) {
     return;
   }
 
