@@ -25,14 +25,19 @@ Run local checks:
 ```bash
 pnpm run build
 pnpm run lint
+pnpm run test
 pnpm run typecheck
 ```
 
 Build output is written to `dist/`. Load that folder in Chrome at `chrome://extensions` with Developer Mode enabled.
 
+Pull requests run the same checks in GitHub Actions.
+
 ## Project Status
 
 Tab-Zen is early-stage open source software. The current implementation is intentionally local and simple, with all browser data read through Chrome extension APIs and processed on device.
+
+Previous automation goal usage: 1,162,619 tokens, elapsed about 72m 48s.
 
 ## Privacy
 
