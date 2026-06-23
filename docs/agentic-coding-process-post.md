@@ -226,7 +226,7 @@ still better for product judgment:
 
 - Does the feature feel right?
 - Is the UX too noisy?
-- Is the architecture still simple?
+- Does the architecture remain simple?
 - Is this worth shipping?
 
 The best workflow is not agent-only. It is agent-first with human checkpoints.
@@ -266,8 +266,9 @@ Codex was most useful when treated like a coding agent inside a real engineering
 process, not like a code generator.
 
 It could read the repo, create branches, make commits, open PRs, respond to
-review, watch checks, merge, and continue. But the quality came from the process
-around it: small stages, explicit gates, review, tests, and final audits.
+review, watch checks, merge, and continue. But the quality came from the
+surrounding process: small stages, explicit gates, review, tests, and final
+audits.
 
 The practical lesson is simple:
 
