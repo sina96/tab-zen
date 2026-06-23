@@ -2,6 +2,8 @@
 
 Tab-Zen is a local-first Chrome Extension for calmer tab management. It helps users see tab pressure, spot duplicate tabs, and receive lightweight interventions when browsing gets crowded.
 
+This repository also served as a practical evaluation of a goal-oriented agentic coding workflow: staged tasks, one pull request per stage, review gates, automated checks, and final completion audits.
+
 ## Features
 
 - MV3 Chrome Extension foundation built with Vite and TypeScript
@@ -38,6 +40,8 @@ Pull requests run the same checks in GitHub Actions.
 Tab-Zen is early-stage open source software. The current implementation is intentionally local and simple, with all browser data read through Chrome extension APIs and processed on device.
 
 Previous automation goal usage: 1,162,619 tokens, elapsed about 72m 48s.
+
+For a write-up of the process, usage, limits, and workflow lessons, see [Building Tab-Zen With a Goal-Oriented Coding Agent](docs/agentic-coding-process-post.md).
 
 ## Privacy
 
